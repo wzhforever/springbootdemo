@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.UserInforemationMapper">
+
+    <resultMap id="user" type="com.example.demo.entity.UserInformation">
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="user_sex" jdbcType="VARCHAR" property="userSex"/>
+        <result column="user_address" jdbcType="VARCHAR" property="userAddress"/>
+        <result column="user_password" jdbcType="VARCHAR" property="userPassword"/>
+
+        <collection property="userAddresses" ofType="com.example.demo.entity.UserAddress">
+            <!--两个表id不能都叫id否则即使有多条也只能查询出来一条-->
+            <result property="id" column="aid"/>
+            <result property="addressCname" column="address_cname"/>
+            <result property="addressType" column="address_type"/>
+        </collection>
+    </resultMap>
+
+    <select id="getUser" resultMap="user">
+        select * from user_information where id = #{id};
+    </select>
+
+    <select id="getUserByUser" resultMap="user" parameterType = "com.example.demo.entity.UserInformation">
+        select info.*,ads.address_cname AS addressCname from user_information where id = #{id} and user_name = #{userName};
+    </select>
+
+
+    <select id="getUsers" resultType="com.example.demo.entity.UserInformation">
+        select * from user_information;
+    </select>
+
+    <!--一对多-->
+    <select id="getUserOneToMany" resultMap="user"  parameterType = "com.example.demo.entity.UserInformation">
+        SELECT *
+        FROM user_information info
+        JOIN user_address ads
+        ON info.user_address = ads.address_type
+        WHERE ads.address_type = #{addressType};
+    </select>
+
+    <insert id="addUser"  parameterType="com.example.demo.entity.UserInformation">
+        INSERT INTO user_information(user_name,user_sex,user_address,user_password)
+        VALUES
+        (#{userName},#{userSex},#{userAddress},#{userPassword})
+    </insert>
+
+    <update id="updateUser" parameterType="com.example.demo.entity.UserInformation">
+        UPDATE user_information SET user_name = #{userName},user_sex = #{userSex},user_address = #{userAddress},user_password = #{userPassword} WHERE id = #{id}
+    </update>
+
+    <delete id="deleteUser" parameterType="com.example.demo.entity.UserInformation">
+        DELETE FROM user_information WHERE id = #{id}
+    </delete>
+</mapper>

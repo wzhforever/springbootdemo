@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.UserAddressMapper">
+
+    <resultMap id="address" type="com.example.demo.entity.UserAddress">
+        <result column="aid" jdbcType="INTEGER" property="id"/>
+        <result column="address_cname" jdbcType="VARCHAR" property="addressCname"/>
+        <result column="address_type" jdbcType="VARCHAR" property="addressType"/>
+        <association property="userInformation" javaType="com.example.demo.entity.UserInformation">
+            <result column="id" jdbcType="INTEGER" property="id"/>
+            <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+            <result column="user_sex" jdbcType="VARCHAR" property="userSex"/>
+            <result column="user_address" jdbcType="VARCHAR" property="userAddress"/>
+            <result column="user_password" jdbcType="VARCHAR" property="userPassword"/>
+        </association>
+    </resultMap>
+    <select id="getUserManyToOne" resultMap="address"  parameterType = "com.example.demo.entity.UserAddress">
+        SELECT *
+        FROM user_information info
+        JOIN user_address ads
+        ON info.user_address = ads.address_type
+        WHERE ads.address_type = #{addressType};
+    </select>
+
+</mapper>
